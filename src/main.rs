@@ -7,7 +7,7 @@ use log::{info};
 use env_logger::Env;
 
 fn main() -> Result<(), Box<dyn std::error::Error>>{
-    env_logger::from_env(Env::default().default_filter_or("warning")).init();
+    env_logger::from_env(Env::default().default_filter_or("info")).init();
     info!("[bar] info");
     let mut app = Cil::new();
     app.run();

@@ -19,6 +19,26 @@ impl Cil {
             .version("0.1.0")
             .author("zjh2857")
             .about("A simple blockchain written in Rust")
+            .subcommand(App::new("transaction")
+                .about("Add a new transaction to the blockchain")
+                .arg(Arg::with_name("from")
+                    .short('f')
+                    .long("from")
+                    .value_name("FROM")
+                    .help("The sender of the transaction")
+                    .takes_value(true))
+                .arg(Arg::with_name("to")
+                    .short('o')
+                    .long("to")
+                    .value_name("TO")
+                    .help("The receiver of the transaction")
+                    .takes_value(true))
+                .arg(Arg::with_name("amount")
+                    .short('m')
+                    .long("amount")
+                    .value_name("AMOUNT")
+                    .help("The amount of the transaction")
+                    .takes_value(true)))
             .arg(Arg::with_name("add")
                 .short('a')
                 .long("add")
@@ -33,14 +53,57 @@ impl Cil {
                 .short('v')
                 .long("validate")
                 .help("Validate the blockchain"))
+            .arg(Arg::with_name("difficulty")
+                .short('d')
+                .long("difficulty")
+                .value_name("DIFFICULTY")
+                .help("Set the difficulty of mining")
+                .takes_value(true)
+                .default_value("1"))
+            .arg(Arg::with_name("transaction")
+                .short('t')
+                .long("transaction")
+                .value_name("TRANSACTION")
+                .help("Add a new transaction to the blockchain")
+                .takes_value(true))
+            .arg(Arg::with_name("from")
+                .short('f')
+                .long("from")
+                .value_name("FROM")
+                .help("The sender of the transaction")
+                .takes_value(true))
+            .arg(Arg::with_name("to")
+                .short('o')
+                .long("to")
+                .value_name("TO")
+                .help("The receiver of the transaction")
+                .takes_value(true))
+            .arg(Arg::with_name("amount")
+                .short('m')
+                .long("amount")
+                .value_name("AMOUNT")
+                .help("The amount of the transaction")
+                .takes_value(true))
             .get_matches();
         if matches.is_present("add") {
             let data = matches.value_of("add").unwrap();
             self.blockchain.add_block(String::from(data));
         } else if matches.is_present("list") {
+            log::info!("list");
+
             self.blockchain.show();
         } else if matches.is_present("validate") {
             self.blockchain.is_valid();
+        } else if matches.is_present("difficulty") {
+            let difficulty = matches.value_of("difficulty").unwrap();
+            let difficulty: u32 = difficulty.parse().unwrap();
+            self.blockchain.set_difficulty(difficulty);
+        } 
+        if let Some(matches) = matches.subcommand_matches("transaction") {
+            let from = matches.value_of("from").unwrap();
+            let to = matches.value_of("to").unwrap();
+            let amount = matches.value_of("amount").unwrap();
+            self.blockchain.add_transaction(String::from(from), String::from(to),String::from(from), amount.parse().unwrap());
         }
     }
 }

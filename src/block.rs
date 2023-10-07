@@ -1,4 +1,5 @@
 use crate::util::string2hash;
+use crate::transaction::Transaction;
 use std::time::{SystemTime, UNIX_EPOCH};
 use serde::{Serialize, Deserialize};
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8,6 +9,7 @@ pub struct Block {
     previous_hash: String,
     hash: String,
     nonce: u32,
+    transactions: Vec<Transaction>,
 }
 
 impl Block {
@@ -23,7 +25,17 @@ impl Block {
             previous_hash,
             hash,
             nonce: 0,
+            transactions: Vec::new(),
         }
+    }
+    pub fn get_transactions(&self) -> Vec<Transaction> {
+        self.transactions.clone()
+    }
+    pub fn add_transaction(&mut self, transaction: Transaction) {
+        self.transactions.push(transaction);
+    }
+    pub fn set_timestamp(&mut self, timestamp: u128) {
+        self.timestamp = timestamp;
     }
     pub fn get_timestamp(&self) -> u128 {
         self.timestamp
@@ -47,6 +59,7 @@ impl Block {
             previous_hash: String::from("0"),
             hash: String::from("0"),
             nonce: 0,
+            transactions: Vec::new(),
         }
     }
 

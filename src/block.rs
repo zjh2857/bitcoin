@@ -2,6 +2,7 @@ use crate::util::string2hash;
 use crate::transaction::Transaction;
 use std::time::{SystemTime, UNIX_EPOCH};
 use serde::{Serialize, Deserialize};
+use crate::transaction::{TxOut, Txin};
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Block {
     timestamp: u128,
@@ -63,11 +64,21 @@ impl Block {
         }
     }
 
+    pub fn add_coinbase(&mut self,address: String) {
+        let mut transaction = Transaction::new();
+        let mut txout = TxOut::new();
+        let mut txin = Txin::new();
+        txout.set_value(50);
+        txout.set_pubkey(address);
+        transaction.add_input(txin);
+        transaction.add_output(txout);
+        self.transactions.push(transaction);
+    }
     pub fn calculate_hash(&self, nonce: u32) -> String {
         let data = format!("{}{}{}{}", self.timestamp, self.data, self.previous_hash, nonce);
         string2hash(data)
     }
-    pub fn mine_block(&mut self, difficulty: u32) {
+    pub fn mine_block(&mut self,difficulty: u32,address: String, txid: u64) {
         let mut nonce = 0;
         let prefix = "0".repeat(difficulty as usize);
         loop {
@@ -79,5 +90,14 @@ impl Block {
             nonce += 1;
         }
         self.nonce = nonce;
+        self.add_coinbase(address);
+        self.set_txid(txid);
+    }
+    pub fn set_txid(&mut self, txid: u64) {
+        let mut txid = txid+1;
+        for transaction in self.transactions.iter_mut() {
+            transaction.set_txid(txid);
+            txid += 1;
+        }
     }
 }

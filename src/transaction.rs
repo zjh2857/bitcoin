@@ -1,12 +1,8 @@
-use bincode::de;
-use crypto::digest::Digest;
-use crypto::sha2::Sha256;
-use crypto::ed25519::keypair;
-use crypto::ed25519::signature;
 use serde::{Serialize, Deserialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Txin {
+    pub txid:u64,
     pub value: u64,
     pub signature: String,
     pub pubkey: String,
@@ -19,6 +15,7 @@ pub struct TxOut {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Transaction {
+    pub txid: u64,
     pub version: u64,
     pub txins: Vec<Txin>,
     pub txouts: Vec<TxOut>,
@@ -28,6 +25,7 @@ pub struct Transaction {
 impl Txin {
     pub fn new() -> Txin {
         Txin {
+            txid: 0,
             value: 0,
             signature: String::from(""),
             pubkey: String::from(""),
@@ -40,6 +38,14 @@ impl Txin {
 
     pub fn get_signature(&self) -> String {
         self.signature.clone()
+    }
+
+    pub fn get_txid(&self) -> u64 {
+        self.txid
+    }
+
+    pub fn set_txid(&mut self, txid: u64) {
+        self.txid = txid;
     }
     pub fn set_value(&mut self, value: u64) {
         self.value = value;
@@ -84,6 +90,7 @@ impl TxOut {
 impl Transaction {
     pub fn new() -> Transaction {
         Transaction {
+            txid: 0,
             version: 1,
             txins: Vec::new(),
             txouts: Vec::new(),
@@ -104,5 +111,17 @@ impl Transaction {
 
     pub fn get_txouts(&self) -> Vec<TxOut> {
         self.txouts.clone()
+    }
+    pub fn get_locktime(&self) -> u32 {
+        self.locktime
+    }
+    pub fn set_txouts(&mut self, txouts: Vec<TxOut>) {
+        self.txouts = txouts;
+    }
+    pub fn set_txid(&mut self, txid: u64) {
+        self.txid = txid;
+    }
+    pub fn get_txid(&self) -> u64 {
+        self.txid
     }
 }

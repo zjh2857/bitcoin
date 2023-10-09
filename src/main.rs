@@ -2,7 +2,7 @@
 use btc::cil::Cil;
 
 #[macro_use]
-use log::{info};
+use log::info;
 
 use env_logger::Env;
 
